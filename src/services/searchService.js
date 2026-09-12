@@ -1,6 +1,8 @@
 const client = require('../config/elasticsearch');
 const { INDEX } = require('./indexService');
 
+const MIN_SCORE = 3.0;
+
 async function searchProducts({ q, category, minPrice, maxPrice, minRating, page = 1, size = 10 }) {
   const must = [];
   const filter = [];
@@ -38,6 +40,7 @@ async function searchProducts({ q, category, minPrice, maxPrice, minRating, page
     index: INDEX,
     from,
     size,
+    ...(q ? { min_score: MIN_SCORE } : {}),
     query: {
       bool: { must, filter },
     },
